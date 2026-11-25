@@ -1,0 +1,4 @@
+{
+  "cloud_provider": "AWS",
+  "environment": "Production",
+  "s3_buckets":

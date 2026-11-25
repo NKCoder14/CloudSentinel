@@ -1,0 +1,56 @@
+
+{
+  "cloud_provider": "AWS",
+  "environment": "Production",
+
+  "s3_buckets": [
+    {
+      "name": "company-data",
+      "public_access": true,
+      "encryption_enabled": false,
+      "versioning_enabled": false
+    },
+    {
+      "name": "backup-storage",
+      "public_access": false,
+      "encryption_enabled": true,
+      "versioning_enabled": true
+    }
+  ],
+
+  "iam_users": [
+    {
+      "name": "admin-user",
+      "permissions": ["*"],
+      "mfa_enabled": false
+    },
+    {
+      "name": "developer-user",
+      "permissions": ["read", "write"],
+      "mfa_enabled": true
+    }
+  ],
+
+  "security_groups": [
+    {
+      "name": "server-firewall",
+      "inbound_rules": [
+        {
+          "port": 22,
+          "protocol": "TCP",
+          "source": "0.0.0.0/0"
+        }
+      ]
+    },
+    {
+      "name": "database-firewall",
+      "inbound_rules": [
+        {
+          "port": 3306,
+          "protocol": "TCP",
+          "source": "0.0.0.0/0"
+        }
+      ]
+    }
+  ]
+}

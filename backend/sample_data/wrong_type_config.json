@@ -1,0 +1,7 @@
+{
+  "cloud_provider": "AWS",
+  "environment": "Production",
+  "s3_buckets": "hello",
+  "iam_users": [],
+  "security_groups": []
+}
