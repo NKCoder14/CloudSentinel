@@ -1,3 +1,4 @@
+
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api'
 
 class APIError extends Error {
@@ -11,15 +12,20 @@ class APIError extends Error {
 
 async function request(path, options = {}) {
   const url = `${BASE_URL}${path}`
+
   const config = {
-    headers: { 'Content-Type': 'application/json', ...options.headers },
     ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
   }
 
   let response
+
   try {
     response = await fetch(url, config)
-  } catch (networkErr) {
+  } catch {
     throw new APIError(
       'Cannot reach the CloudSentinel backend. Make sure Django is running on port 8000.',
       0,
@@ -29,51 +35,60 @@ async function request(path, options = {}) {
 
   if (!response.ok) {
     let data = null
-    try { data = await response.json() } catch { }
+
+    try {
+      data = await response.json()
+    } catch { }
+
     const message =
-      data?.detail || data?.error || data?.message ||
+      data?.detail ||
+      data?.error ||
+      data?.message ||
       `Request failed with status ${response.status}`
+
     throw new APIError(message, response.status, data)
   }
 
-  // 204 No Content
   if (response.status === 204) return null
 
   return response.json()
 }
 
-// ─── Scans ─────────────────────────────────────────────────────────────────
+function validateScanId(scanId) {
+  if (
+    scanId === undefined ||
+    scanId === null ||
+    String(scanId).trim() === '' ||
+    String(scanId) === 'undefined' ||
+    String(scanId) === 'null'
+  ) {
+    throw new APIError(
+      'Invalid scan ID. Please return to Audit Reports and select a valid report.',
+      400,
+      null
+    )
+  }
+
+  return encodeURIComponent(String(scanId))
+}
+
 export const scansAPI = {
-  /**
-   * Run a new security scan.
-   * @param {object} configJson — parsed AWS configuration snapshot
-   */
   run: (configJson) =>
     request('/scans/', {
       method: 'POST',
       body: JSON.stringify(configJson),
     }),
 
-  /**
-   * List all previous scans.
-   */
   list: () => request('/scans/'),
 
-  /**
-   * Get a single scan with its findings.
-   * @param {string|number} scanId
-   */
-  get: (scanId) => request(`/scans/${scanId}/`),
+  get: (scanId) =>
+    request(`/scans/${validateScanId(scanId)}/`),
 
-  /**
-   * Request optional Nemotron assistance for a completed scan.
-   * The backend must keep the deterministic findings as the source of truth.
-   */
   analyzeWithAI: (scanId, payload) =>
-    request(`/scans/${scanId}/ai-analysis/`, {
+    request(`/scans/${validateScanId(scanId)}/ai-analysis/`, {
       method: 'POST',
       body: JSON.stringify(payload),
     }),
 }
 
-export { APIError }
+export { APIError } 
