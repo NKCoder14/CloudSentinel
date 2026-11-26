@@ -1,10 +1,9 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { FileText, ChevronLeft, FileJson, Brain } from 'lucide-react'
+import { ChevronLeft, FileJson, Brain } from 'lucide-react'
 import { useScan } from '../../hooks/useScans.js'
 import { formatDateTime } from '../../utils/formatters.js'
 import { exportScanJson, summarizeScanWithAI } from '../../services/scanService.js'
-import { StatusBadge } from '../common/Badge.jsx'
 import Button from '../common/Button.jsx'
 import Header from '../layout/Header.jsx'
 import LoadingState from '../common/LoadingState.jsx'
@@ -74,9 +73,6 @@ export default function ReportDetails() {
             <Button variant="secondary" size="sm" onClick={handleExport}>
               <FileJson size={13} /> Export JSON
             </Button>
-            <Button variant="ghost" size="sm" disabled title="PDF export coming soon" className="opacity-50 cursor-not-allowed">
-              <FileText size={13} /> PDF <span className="text-2xs ml-1 opacity-70">Soon</span>
-            </Button>
           </>
         }
       />
@@ -92,7 +88,6 @@ export default function ReportDetails() {
               <div className="flex items-center gap-2">
                 <Brain size={16} className="text-lav-600" />
                 <h2 id="ai-summary-title" className="text-sm font-semibold text-cs-primary">AI Security Briefing</h2>
-                <span className="badge-neutral text-2xs">Optional</span>
               </div>
               <p className="text-xs text-cs-muted mt-1">Generate a plain-language summary of findings already detected by the security engine.</p>
             </div>
