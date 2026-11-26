@@ -14,10 +14,11 @@ def test_process_vulnerable_snapshot():
 
     resources = process_snapshot(file_path)
 
-    assert len(resources) == 2
+    assert len(resources) == 3
 
     assert resources[0].resource_type == "AWS::S3::Bucket"
     assert resources[1].resource_type == "AWS::EC2::SecurityGroup"
+    assert resources[2].resource_type == "AWS::IAM::Policy"
 
     assert resources[0].configuration["public_access"] is True
 

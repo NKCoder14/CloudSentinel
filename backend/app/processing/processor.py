@@ -1,6 +1,7 @@
+
 from pathlib import Path
 
-from app.processing.parser import parse_json_file
+from app.ingestion.snapshot_loader import load_snapshot
 from app.processing.validator import validate_snapshot
 from app.processing.resource_extractor import extract_resources
 from app.processing.normalizer import normalize_resource
@@ -13,13 +14,19 @@ def process_snapshot(
     """
     Execute the complete configuration processing pipeline.
 
-    JSON file -> Parse -> Validate -> Extract -> Normalize
+    File -> Ingestion -> Schema Validation -> Extraction -> Normalization
     """
 
-    # Step 1: Read JSON
-    raw_data = parse_json_file(file_path)
+    path = Path(file_path)
 
-    # Step 2: Validate snapshot
+    if not path.is_file():
+        raise FileNotFoundError(f"Snapshot file not found: {path}")
+
+    # Step 1: Read file bytes and perform ingestion checks
+    file_content = path.read_bytes()
+    raw_data = load_snapshot(file_content)
+
+    # Step 2: Validate using existing Pydantic schema
     snapshot = validate_snapshot(raw_data)
 
     # Step 3: Extract individual resources
@@ -27,7 +34,10 @@ def process_snapshot(
 
     # Step 4: Normalize resources
     normalized_resources = [
-        normalize_resource(resource, provider=snapshot.provider)
+        normalize_resource(
+            resource,
+            provider=snapshot.provider
+        )
         for resource in resources
     ]
 

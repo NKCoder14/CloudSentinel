@@ -1,0 +1,54 @@
+
+{
+  "provider": "aws",
+  "resources": [
+    {
+      "resource_id": "bucket-001",
+      "resource_type": "AWS::S3::Bucket",
+      "resource_name": "company-data",
+      "region": "ap-south-1",
+      "configuration": {
+        "public_access": true,
+        "encryption_enabled": false
+      }
+    },
+    {
+      "resource_id": "sg-001",
+      "resource_type": "AWS::EC2::SecurityGroup",
+      "resource_name": "web-server-sg",
+      "region": "ap-south-1",
+      "configuration": {
+        "inbound_rules": [
+          {
+            "protocol": "tcp",
+            "port": 22,
+            "cidr": "0.0.0.0/0"
+          },
+          {
+            "protocol": "tcp",
+            "port": 3306,
+            "cidr": "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+    {
+      "resource_id": "policy-001",
+      "resource_type": "AWS::IAM::Policy",
+      "resource_name": "AdminAccessPolicy",
+      "region": "ap-south-1",
+      "configuration": {
+        "policy_document": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": "*",
+              "Resource": "*"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
